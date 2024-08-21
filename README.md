@@ -1,4 +1,10 @@
 # 2024 Infodengue Sprint: Dengue Fever Predictive Modeling in Brazil
+
+## Background
+The year 2024 has seen an exceptional number of reported dengue fever cases in various parts of the world. In Brazil, as of august, 5, were reported 6.4 million cases and 5080 confirmed deaths. 
+
+the disease has spread to new areas in the south and at altitudes where epidemics were not previously recorded, or or reemerging in areas whose control programs had already eradicated them, with an incidence rate has far exceeding that of previous years. The objective of this sprint, therefore, is to promote, in a standardized way, the training of predictive models with the aim of developing an ensemble forecast for dengue in Brazil. Our premisse is that predicting where the next epidemic will hit is important for allocating resources to reduce diseases burden, enabling timely response.
+
 ## Dengue Forecast Ensemble Chalenge
 The Infodengue project a works with early warning system to help manage arbovirus diseases response and surveillance, working closely with the Brazilian MOH. he Mosqlimate project’s mission is facilitate modeling the impact of climate on the dynamics of Arboviruses
 
@@ -6,10 +12,16 @@ The dengue  forecast ensemble was designed to work with models from the 2024 Inf
 
 In this chalenge, for constructing the ensemble models, two methods were selected considering their ability to combine the strengths of different types of models.
 
-## Background
-The year 2024 has seen an exceptional number of reported dengue fever cases in various parts of the world. In Brazil, as of august, 5, were reported 6.4 million cases and 5080 confirmed deaths. 
-
-the disease has spread to new areas in the south and at altitudes where epidemics were not previously recorded, or or reemerging in areas whose control programs had already eradicated them, with an incidence rate has far exceeding that of previous years. The objective of this sprint, therefore, is to promote, in a standardized way, the training of predictive models with the aim of developing an ensemble forecast for dengue in Brazil. Our premisse is that predicting where the next epidemic will hit is important for allocating resources to reduce diseases burden, enabling timely response.
+## The Sprint goals
+Main goal: provide forecasts for 2025, at state level, by:
+1. Organizing a community of modellers with unified goal and methods - done
+2. Together generate a set of independent models tested using data from previous seasons - done
+3. Train ensemble model with all submissions 
+4. Produce forecasts for 2025 using the best models, either single or combined
+5. Report the results as a technical report to the Ministry of Health
+6. Update and monitor the performance of the models in 2025
+7. Publish a scientific paper on this experience
+8. Organize a larger Sprint initiative in 2025.
 
 ## Methodology 
 The challenge had two test goals and a forecast goal, described below. 
