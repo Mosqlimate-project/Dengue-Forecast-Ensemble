@@ -5,7 +5,7 @@ This is a dengue ensemble forecast model designed to work with models from the 2
 # Background
 The year 2024 has seen an exceptional number of reported dengue fever cases in various parts of the world. In Brazil, the disease has spread to new areas in the south and at altitudes where epidemics were not previously recorded, or or reemerging in areas whose control programs had already eradicated them, with an incidence rate has far exceeding that of previous years. The objective of this sprint, therefore, is to promote, in a standardized way, the training of predictive models with the aim of developing an ensemble forecast for dengue in Brazil.
 
-# The chalenge 
+# The chalenge methodology 
 The challenge had two test goals and a forecast goal, described below. 
 
 Validation test 1. Predict the weekly number of dengue cases by state (UF) in the 2022-2023 season [EW 41 2022- EW40 2023], using data covering the period from EW 01 2010 to EW 25 2022;
@@ -20,7 +20,14 @@ The following outcomes should be provided by the models, both with point estimat
 
 The training data sets and their respective variable dictionary were made available on the Mosqlimate platform. In generalthe dataset contained epidemiological, demographic, climate, miscellaneous and environmental data. Other data sources indicated by the participants themselves were shared on the same platform since they followed the same characteristics of the platform data: open access, updatable and available to all Brazilian states.
 
-# Results
+All information to make the developed models available was published in the repository https://github.com/Mosqlimate-project/sprint-template
 
+# Results
+Eleven teams were participating in the Sprint, resulting in XXX models developed 
+
+The models
+Predictions
 
 # Forecast Evaluation
+Algorithm
+Score
