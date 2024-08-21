@@ -7,7 +7,9 @@ The dengue  forecast ensemble was designed to work with models from the 2024 Inf
 In this chalenge, for constructing the ensemble models, two methods were selected considering their ability to combine the strengths of different types of models.
 
 ## Background
-The year 2024 has seen an exceptional number of reported dengue fever cases in various parts of the world. In Brazil, the disease has spread to new areas in the south and at altitudes where epidemics were not previously recorded, or or reemerging in areas whose control programs had already eradicated them, with an incidence rate has far exceeding that of previous years. The objective of this sprint, therefore, is to promote, in a standardized way, the training of predictive models with the aim of developing an ensemble forecast for dengue in Brazil.
+The year 2024 has seen an exceptional number of reported dengue fever cases in various parts of the world. In Brazil, as of august, 5, were reported 6.4 million cases and 5080 confirmed deaths. 
+
+the disease has spread to new areas in the south and at altitudes where epidemics were not previously recorded, or or reemerging in areas whose control programs had already eradicated them, with an incidence rate has far exceeding that of previous years. The objective of this sprint, therefore, is to promote, in a standardized way, the training of predictive models with the aim of developing an ensemble forecast for dengue in Brazil. Our premisse is that predicting where the next epidemic will hit is important for allocating resources to reduce diseases burden, enabling timely response.
 
 ## Methodology 
 The challenge had two test goals and a forecast goal, described below. 
