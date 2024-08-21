@@ -1,13 +1,15 @@
 # 2024 Infodengue Sprint: Dengue Fever Predictive Modeling in Brazil
-This is a dengue ensemble forecast model designed to work with models from the 2024 Infodengue sprint. This initiative is led by the Mosqlimate project, in collaboration with the Harmonize and IDExtremes projects.
+## Dengue Forecast Ensemble Chalenge
+The Infodengue project a works with early warning system to help manage arbovirus diseases response and surveillance, working closely with the Brazilian MOH. he Mosqlimate project’s mission is facilitate modeling the impact of climate on the dynamics of Arboviruses
 
-## Dengue Forecast Ensemble
-For constructing the ensemble models, two methods were selected considering their ability to combine the strengths of different types of models.
+The dengue  forecast ensemble was designed to work with models from the 2024 Infodengue sprint.This initiative is led by the Mosqlimate project, in collaboration with the Harmonize and IDExtremes projects. The nvited teams are collaborators of the Infodengue team with stronger experience with dengue modelling.
+
+In this chalenge, for constructing the ensemble models, two methods were selected considering their ability to combine the strengths of different types of models.
 
 ## Background
 The year 2024 has seen an exceptional number of reported dengue fever cases in various parts of the world. In Brazil, the disease has spread to new areas in the south and at altitudes where epidemics were not previously recorded, or or reemerging in areas whose control programs had already eradicated them, with an incidence rate has far exceeding that of previous years. The objective of this sprint, therefore, is to promote, in a standardized way, the training of predictive models with the aim of developing an ensemble forecast for dengue in Brazil.
 
-## The chalenge methodology 
+## Methodology 
 The challenge had two test goals and a forecast goal, described below. 
 
 Validation test 1. Predict the weekly number of dengue cases by state (UF) in the 2022-2023 season [EW 41 2022- EW40 2023], using data covering the period from EW 01 2010 to EW 25 2022;
@@ -36,10 +38,9 @@ There are seven teams participating in the Dengue 2024 Sprint that were released
 
 ### Models description
 
-
-
-
 ### Predictions
+
+
 
 ## Forecast Evaluation
 The Mosqlimate group evaluated the performance of each model using a set of scores. The logarithmic score, CRPS and the interval score were computed using the 'ScoringRules Python package'. Other metrics were calculated as additional feedback for the teams, without affecting the classification of the models, such as (i) average scores in these regions of interest in the prediction window, considering epidemic onset (weeks between growth start and the peak) and epidemic peak (3 week window centered on the peak) and (ii) the time lag, maximizing cross-correlation between forecasts and data
