@@ -25,9 +25,20 @@ The training data sets and their respective variable dictionary were made availa
 All information to make the developed models available was published in the repository https://github.com/Mosqlimate-project/sprint-template
 
 ## Results
-There are seven teams participating in the Dengue 2024 Sprint, resulting in XXX models developed that were presented in a workshop on August, 16. 
+There are seven teams participating in the Dengue 2024 Sprint that were released several models to dengue prediction presented in a workshop on August, 16.  
+1. D-fense - 
+2. Dobby Data - LTSH model 
+3. GeoHealth - Prophet model with PCA and vaiance threshold and LSTM model with PCA and vaiance threshold Models 	 
+4. Global Health Resilience - Temp-SPI Interaction Model
+5. PET - BB-M Model
+6. Ki-Dengu Peppa -  Weekly and yearly (iid) components and Weekly and yearly (rw1) components Models	 
+7. DS_OKSTATE - Info dengue CNN LSTM Ensemble Model	 
 
-### The models
+### Models description
+
+
+
+
 ### Predictions
 
 ## Forecast Evaluation
