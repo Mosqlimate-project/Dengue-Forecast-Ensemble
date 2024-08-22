@@ -10,7 +10,9 @@ The Infodengue project a works with early warning system to help manage arboviru
 
 The dengue  forecast ensemble was designed to work with models from the 2024 Infodengue sprint.This initiative is led by the Mosqlimate project, in collaboration with the Harmonize and IDExtremes projects. The nvited teams are collaborators of the Infodengue team with stronger experience with dengue modelling.
 
-In this chalenge, for constructing the ensemble models, two methods were selected considering their ability to combine the strengths of different types of models.
+In this chalenge, for constructing the ensemble forecast model, we combined the best methods submitted that were selected considering their ability to combine the strengths of different types of models. The ensemble forecast model will be built as a Stacking Regression model. 
+
+For this feature, were used Scikit-learn’s Stacking implementation. A meta-estimator was trained on the same data as the individual models and forecasts from individual models were used as a look-up table.
 
 ## The Sprint goals
 Main goal: provide forecasts for 2025, at state level, by:
