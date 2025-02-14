@@ -6,7 +6,7 @@ from scipy.optimize import minimize
 from scipy.stats import lognorm, norm
 from scipy.interpolate import interp1d
 from scipy.integrate import cumulative_trapezoid
-from scoringrules import crps_lognormal, crps_normal  
+from scoringrules import crps_lognormal, crps_normal,  interval_score  
 
 def invlogit(y):
     return 1 / (1 + np.exp(-y))
@@ -47,7 +47,7 @@ def pool_par_gauss(alpha, m, v):
     mstar = np.sum(ws * m) * vstar
     return mstar, np.sqrt(vstar)
     
-def get_lognormal_pars(med, lwr, upr, alpha=0.90):
+def get_lognormal_pars(med, lwr, upr, alpha=0.90, fn_loss = 'median'):
     '''
     Function to represent a forecast, considering its known median, 
     lower and upper limit (considering a CI of alpha), as a normal logarithmic distribution
@@ -68,16 +68,38 @@ def get_lognormal_pars(med, lwr, upr, alpha=0.90):
     tuple
         The first one is the mu and the second one the sd parameter of the distribution.
     '''
-    def loss2(theta):
+    def loss_lower(theta):
         tent_qs = lognorm.ppf([(1 - alpha)/2, (1 + alpha)/2], s=theta[1], scale=np.exp(theta[0]))
         if lwr == 0:
             attained_loss = abs(upr - tent_qs[1]) / upr
         else:
             attained_loss = abs(lwr - tent_qs[0]) / lwr + abs(upr - tent_qs[1]) / upr
         return attained_loss
+    
+    def loss_median(theta):
+        tent_qs = lognorm.ppf([0.5, (1 + alpha)/2], s=theta[1], scale=np.exp(theta[0]))
+        if  med == 0:
+            attained_loss = abs(upr - tent_qs[1]) / upr
+        else:
+            attained_loss = abs(med - tent_qs[0]) / med + abs(upr - tent_qs[1]) / upr
+        return attained_loss
+    
+    if med == 0:
+        mustar = np.log(0.1)
+    else: 
+        mustar = np.log(med)
 
-    mustar = np.log(med)
-    result = minimize(loss2, x0=[mustar, 0.5], bounds=[(-5 * abs(mustar), 5 * abs(mustar)), (0, 10)],method = "Nelder-mead")
+    if fn_loss == 'median':
+        result = minimize(loss_median, x0=[mustar, 0.5], bounds=[(-5 * abs(mustar), 5 * abs(mustar)), (0, 15)],method = "Nelder-mead", 
+                          options={'xatol': 1e-6, 'fatol': 1e-6, 
+                           'maxiter': 1000, 
+                           'maxfev':1000})
+    if fn_loss == 'lower':
+            result = minimize(loss_lower, x0=[mustar, 0.5], bounds=[(-5 * abs(mustar), 5 * abs(mustar)), (0, 15)],method = "Nelder-mead",
+                            options={'xatol': 1e-8, 'fatol': 1e-8, 
+                           'maxiter': 5000,
+                           'maxfev':5000})
+
     return result.x
 
 def get_normal_pars(med, lwr, upr, alpha=0.90):
@@ -113,7 +135,7 @@ def get_normal_pars(med, lwr, upr, alpha=0.90):
     result = minimize(loss2, x0=[mustar, 2*mustar], bounds=[(-5 * abs(mustar), 5 * abs(mustar)), (0, 100000)],method = "Nelder-mead")
     return result.x
 
-def get_df_log_pars(preds_, alpha = 0.9):
+def get_df_log_pars(preds_, alpha = 0.9, fn_loss = 'median'):
     '''
     Function that takes a DataFrame with columns ordered as: date, pred, lower, upper, 
     model_id, and adds five additional columns: mu, sigma, fit_med, fit_lwr, and fit_upr. 
@@ -134,7 +156,7 @@ def get_df_log_pars(preds_, alpha = 0.9):
         Dataframe with five additional columns: mu, sigma, fit_med, fit_lwr, and fit_upr.
 
     '''
-    compute_pars_result = np.apply_along_axis(lambda row: get_lognormal_pars(med=row[1], lwr=row[2], upr=row[3]), 1, preds_)
+    compute_pars_result = np.apply_along_axis(lambda row: get_lognormal_pars(med=row[1], lwr=row[2], upr=row[3], fn_loss = fn_loss), 1, preds_)
     
     par_df = pd.DataFrame(compute_pars_result, columns=["mu", "sigma"])
     
@@ -340,6 +362,7 @@ class Ensemble:
         df: pd.DataFrame,
         order_models = list, 
         dist: str = 'log_normal',
+        fn_loss:str = 'median'
 
     ):
         """
@@ -363,7 +386,7 @@ class Ensemble:
         if dist == 'normal':
             df = get_df_normal_pars(df, alpha = 0.9)
         elif dist == 'log_normal': 
-            df = get_df_log_pars(df, alpha = 0.9)
+            df = get_df_log_pars(df, alpha = 0.9, fn_loss=fn_loss)
 
         self.df = df 
         self.dist = dist 
@@ -634,7 +657,8 @@ class Ensemble_linear:
     def __init__(
         self,
         df: pd.DataFrame,
-        order_models = list, 
+        order_models: list,
+        fn_loss: str ,
 
     ):
         """
@@ -654,7 +678,7 @@ class Ensemble_linear:
                 "The input dataframe must contain the columns: 'date', 'pred', 'lower', 'upper', 'model_id'"
             )
         
-        df = get_df_log_pars(df, alpha = 0.9)
+        df = get_df_log_pars(df, alpha = 0.9, fn_loss=fn_loss)
 
         self.df = df 
         self.order_models = order_models
@@ -719,3 +743,140 @@ class Ensemble_linear:
         
         return df_for
     
+class Scorer:
+    """
+    A class to compare the score of the models.
+    """
+
+    def __init__(
+        self,
+        df_true: pd.DataFrame,
+        pred: pd.DataFrame,
+        confidence_level: float = 0.90,
+    ):
+        """
+        Parameters
+        ----------
+        df_true: pd.DataFrame
+            DataFrame with the columns `date` and `casos`.
+        ids : list[int]
+            List of the predictions ids that it will be compared.
+        pred: pd.DataFrame
+            Pandas Dataframe already in the format accepted by the platform
+            that will be computed the score.
+        confidence_level: float.
+            The confidence level of the predictions of the columns upper and lower.
+        """
+
+        # input validation data
+        cols_df_true = ["date", "casos"]
+
+        if not set(cols_df_true).issubset(set(list(df_true.columns))):
+            raise ValueError(
+                "Missing required keys in the df_true:" f"{set(cols_df_true).difference(set(list(df_true.columns)))}"
+            )
+
+        df_true.date = pd.to_datetime(df_true.date)
+        df_true = df_true.sort_values(by = 'date')
+        # Ensure all the dates has the same lenght
+        min_dates = [min(df_true.date)]
+        max_dates = [max(df_true.date)]
+
+        cols_preds = ["date", "lower", "pred", "upper"]
+        if not set(cols_preds).issubset(set(list(pred.columns))):
+            raise ValueError(
+                    "Missing required keys in the pred:" f"{set(cols_preds).difference(set(list(pred.columns)))}"
+            )
+
+        pred.date = pd.to_datetime(pred.date)
+        pred = pred.sort_values(by = 'date')
+
+        pred = get_df_log_pars(pred[['date', 'pred', 'lower', 'upper']].reset_index(drop=True), fn_loss = 'median')
+
+        min_date = min(pred.date)
+        max_date = max(pred.date)
+
+        # updating the dates interval
+        df_true = df_true.loc[(df_true.date >= min_date) & (df_true.date <= max_date)]
+        df_true = df_true.sort_values(by="date")
+        df_true.reset_index(drop=True, inplace=True)
+
+        self.df_true = df_true
+        self.df_pred = pred
+        self.confidence_level = confidence_level
+
+    @property
+    def crps(
+        self,
+    ):
+        """
+        tuple of dict: Dict where the keys are the id of the models or `pred`
+        when a dataframe of predictions is provided by the user,
+        and the values of the dict are the scores computed.
+
+        The first dict contains the CRPS score computed for every predicted
+        point, and the second one contains the mean values of the CRPS score
+        for all the points.
+
+        The CRPS computed assumes a normal distribution.
+        """
+
+        df_true = self.df_true
+        df_pred = self.df_pred
+
+        score = crps_lognormal(df_true.casos.values, df_pred.mu, df_pred.sigma)
+
+        return score, np.mean(score)
+
+    @property
+    def log_score(
+        self,
+    ):
+        """
+        tuple of dict: Dict where the keys are the id of the models or `pred`
+        when a dataframe of predictions is provided by the user, and the values
+        of the dict are the scores computed.
+
+        The first dict contains the log score computed for every predicted
+        point, and the second one contains the mean values of the log score
+        for all the points.
+
+        The log score computed assumes a normal distribution.
+        """
+
+        df_true = self.df_true
+        df_pred = self.df_pred
+
+        score =  lognorm.logpdf(df_true.casos.values, s=df_pred.sigma.values, scale=np.exp(df_pred.mu.values))
+
+        # logs_lognormal(df_true.casos.values, df_pred.mu, df_pred.sigma)
+
+        score = np.maximum(score, np.repeat(-100, len(score)))
+
+        return score, np.mean(score)
+
+    @property
+    def interval_score(
+        self,
+    ):
+        """
+        tuple of dict: Dict where the keys are the id of the models or `pred`
+        when a dataframe of predictions is provided by the user,
+        and the values of the dict are the scores computed.
+
+        The first dict contains the interval score computed for every predicted
+        point, and the second one contains the mean values of the interval score
+        for all the points.
+        """
+
+        
+        df_true = self.df_true
+        df_pred = self.df_pred
+
+        score = interval_score(
+                                df_true.casos.values,
+                                df_pred.lower,
+                                df_pred.upper,
+                                alpha = 0.1)
+                                       
+        return score, np.mean(score)
